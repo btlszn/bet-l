@@ -1,0 +1,57 @@
+#include <stdio.h>
+#include <time.h>
+#include <stdint.h>
+
+struct Tarih {
+    int yil;
+    int ay;
+    int gun;
+    int saat;
+    int dakika;
+    int saniye;
+};
+
+union EpochDonusturucu {
+    struct Tarih t;
+    time_t epoch;
+};
+
+time_t tarihToEpoch(struct Tarih t) {
+    struct tm zaman;
+    zaman.tm_year = t.yil - 1900; 
+    zaman.tm_mon = t.ay - 1; 
+    zaman.tm_mday = t.gun; 
+    zaman.tm_hour = t.saat; 
+    zaman.tm_min = t.dakika; 
+    zaman.tm_sec = t.saniye; 
+    
+    return mktime(&zaman); 
+}
+
+int main() {
+    union EpochDonusturucu tarih1, tarih2;
+    time_t epoch1, epoch2;
+
+    printf("İlk tarih ve saati girin (yil ay gun saat dakika saniye): ");
+    scanf("%d %d %d %d %d %d", &tarih1.t.yil, &tarih1.t.ay, &tarih1.t.gun, &tarih1.t.saat, &tarih1.t.dakika, &tarih1.t.saniye);
+
+    printf("İkinci tarih ve saati girin (yil ay gun saat dakika saniye): ");
+    scanf("%d %d %d %d %d %d", &tarih2.t.yil, &tarih2.t.ay, &tarih2.t.gun, &tarih2.t.saat, &tarih2.t.dakika, &tarih2.t.saniye);
+
+    epoch1 = tarihToEpoch(tarih1.t);
+    epoch2 = tarihToEpoch(tarih2.t);
+
+    printf("İlk tarih ve saatin epoch saniyesi: %ld\n", epoch1);
+    printf("İkinci tarih ve saatin epoch saniyesi: %ld\n", epoch2);
+
+    if (epoch1 != -1 && epoch2 != -1) { 
+        long int zamanFarki = epoch2 - epoch1;
+        printf("Zaman farkı (saniye): %ld\n", zamanFarki);
+        double zamanFarkigun = (double)zamanFarki / 86400;  
+        printf("Zaman farkı gün olarak: %.2f\n", zamanFarkigun);
+    } else {
+        printf("Geçersiz tarih veya saat girdiniz.\n");
+    }
+
+    return 0;
+}
